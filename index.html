@@ -49,52 +49,48 @@
     </div>
   </div>
 
-  <!-- Supabase -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.30.0/dist/supabase.min.js"></script>
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const supabaseClient = supabase.createClient(
-        "https://xguhxlklweexjrnwlqup.supabase.co",
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhndWh4bGtsd2VleGpybndscXVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcxNzM3NjgsImV4cCI6MjA3Mjc0OTc2OH0.amMmJrd45QB1RwOteWTw2i_V2vq1lzAGHbifg7RB43o"
-      );
+  <!-- Supabase as ES module -->
+  <script type="module">
+    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-      async function loadAnimation(animationId) {
-        try {
-          const { data, error } = await supabaseClient
-            .from("dog_animations")
-            .select("animation_name, file_path, file_format, description")
-            .eq("animation_id", animationId)
-            .single();
+    const supabase = createClient(
+      "https://xguhxlklweexjrnwlqup.supabase.co",
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhndWh4bGtsd2VleGpybndscXVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcxNzM3NjgsImV4cCI6MjA3Mjc0OTc2OH0.amMmJrd45QB1RwOteWTw2i_V2vq1lzAGHbifg7RB43o"
+    );
 
-          console.log("Supabase response:", { data, error });
+    async function loadAnimation(animationId) {
+      try {
+        const { data, error } = await supabase
+          .from("dog_animations")
+          .select("animation_name, file_path, file_format, description")
+          .eq("animation_id", animationId)
+          .single();
 
-          if (error) throw error;
-          if (!data) throw new Error("No data returned");
+        console.log("Supabase response:", { data, error });
+        if (error) throw error;
+        if (!data) throw new Error("No data returned");
 
-          // Update DOM
-          const dogPane = document.getElementById("dog-animation");
-          const currentAnim = document.getElementById("current-animation");
-          const petStatus = document.querySelector(".pet-status span");
+        const dogPane = document.getElementById("dog-animation");
+        const currentAnim = document.getElementById("current-animation");
+        const petStatus = document.querySelector(".pet-status span");
 
-          petStatus.textContent = data.animation_name || "[Animation]";
-          currentAnim.textContent = data.description || "[Animation description]";
+        petStatus.textContent = data.animation_name || "[Animation]";
+        currentAnim.textContent = data.description || "[Animation description]";
 
-          if (["mp4","webm"].includes(data.file_format.toLowerCase())) {
-            dogPane.innerHTML = `<video src="${data.file_path}" controls width="320"></video>`;
-          } else if (["gif","png","jpg","jpeg","webp"].includes(data.file_format.toLowerCase())) {
-            dogPane.innerHTML = `<img src="${data.file_path}" alt="${data.animation_name}" style="max-width:320px;border-radius:8px">`;
-          } else {
-            dogPane.textContent = "[Dog animation here]";
-          }
-        } catch (err) {
-          console.error("Error loading animation:", err);
-          alert("Failed to load animation. Check console.");
+        if (["mp4","webm"].includes(data.file_format.toLowerCase())) {
+          dogPane.innerHTML = `<video src="${data.file_path}" controls width="320"></video>`;
+        } else if (["gif","png","jpg","jpeg","webp"].includes(data.file_format.toLowerCase())) {
+          dogPane.innerHTML = `<img src="${data.file_path}" alt="${data.animation_name}" style="max-width:320px;border-radius:8px">`;
+        } else {
+          dogPane.textContent = "[Dog animation here]";
         }
+      } catch (err) {
+        console.error("Error loading animation:", err);
       }
+    }
 
-      // Load animation ID 1 on page load
-      loadAnimation(1);
-    });
+    // Load animation ID 1
+    loadAnimation(1);
   </script>
 </body>
 </html>
