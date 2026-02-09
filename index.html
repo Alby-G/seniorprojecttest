@@ -129,45 +129,47 @@
 
   <!-- Include Supabase client -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.30.0/dist/supabase.min.js"></script>
+
+  <!-- Initialize and load animation after DOM loads -->
   <script>
-    // Initialize Supabase with your project info
-    const supabase = supabase.createClient(
-      "https://xguhxlklweexjrnwlqup.supabase.co",
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhndWh4bGtsd2VleGpybndscXVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcxNzM3NjgsImV4cCI6MjA3Mjc0OTc2OH0.amMmJrd45QB1RwOteWTw2i_V2vq1lzAGHbifg7RB43o"
-    );
+    window.addEventListener("DOMContentLoaded", async () => {
+      const supabase = supabase.createClient(
+        "https://xguhxlklweexjrnwlqup.supabase.co",
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhndWh4bGtsd2VleGpybndscXVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcxNzM3NjgsImV4cCI6MjA3Mjc0OTc2OH0.amMmJrd45QB1RwOteWTw2i_V2vq1lzAGHbifg7RB43o"
+      );
 
-    async function loadAnimation(animationId) {
-      const { data, error } = await supabase
-        .from("dog_animations")
-        .select("animation_name, file_path, file_format, description")
-        .eq("animation_id", animationId)
-        .single();
+      async function loadAnimation(animationId) {
+        const { data, error } = await supabase
+          .from("dog_animations")
+          .select("animation_name, file_path, file_format, description")
+          .eq("animation_id", animationId)
+          .single();
 
-      if (error) {
-        console.error(error);
-        alert("Error loading animation");
-        return;
+        if (error) {
+          console.error(error);
+          alert("Error loading animation: " + error.message);
+          return;
+        }
+
+        const dogPane = document.querySelector(".dog-pane .section-content");
+        const currentAnimation = document.querySelector(".dog-pane .section-content + .section-title + .section-content");
+        const petStatus = document.querySelector(".pet-status span");
+
+        petStatus.textContent = data.animation_name || "[Animation]";
+        currentAnimation.textContent = data.description || "[Animation description]";
+
+        if (["mp4","webm"].includes(data.file_format.toLowerCase())) {
+          dogPane.innerHTML = `<video src="${data.file_path}" controls width="320"></video>`;
+        } else if (["gif","png","jpg","jpeg","webp"].includes(data.file_format.toLowerCase())) {
+          dogPane.innerHTML = `<img src="${data.file_path}" alt="${data.animation_name}" style="max-width:320px;border-radius:8px">`;
+        } else {
+          dogPane.textContent = "[Dog animation here]";
+        }
       }
 
-      // Update the DOM
-      const dogPane = document.querySelector(".dog-pane .section-content");
-      const currentAnimation = document.querySelector(".dog-pane .section-content + .section-title + .section-content");
-      const petStatus = document.querySelector(".pet-status span");
-
-      petStatus.textContent = data.animation_name || "[Animation]";
-      currentAnimation.textContent = data.description || "[Animation description]";
-
-      if (["mp4","webm"].includes(data.file_format.toLowerCase())) {
-        dogPane.innerHTML = `<video src="${data.file_path}" controls width="320"></video>`;
-      } else if (["gif","png","jpg","jpeg","webp"].includes(data.file_format.toLowerCase())) {
-        dogPane.innerHTML = `<img src="${data.file_path}" alt="${data.animation_name}" style="max-width:320px;border-radius:8px">`;
-      } else {
-        dogPane.textContent = "[Dog animation here]";
-      }
-    }
-
-    // Example: load animation with ID 1
-    loadAnimation(1);
+      // Load animation ID 1 (change this ID as needed)
+      loadAnimation(1);
+    });
   </script>
 </body>
 </html>
