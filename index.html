@@ -128,18 +128,18 @@
   </div>
 
   <!-- Include Supabase client -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.30.0/dist/supabase.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.30.0/dist/supabase.min.js" onload="initSupabase()"></script>
 
-  <!-- Initialize and load animation after DOM loads -->
   <script>
-    window.addEventListener("DOMContentLoaded", async () => {
-      const supabase = supabase.createClient(
+    function initSupabase() {
+      // Initialize Supabase AFTER the library has loaded
+      const supabaseClient = supabase.createClient(
         "https://xguhxlklweexjrnwlqup.supabase.co",
         "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhndWh4bGtsd2VleGpybndscXVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcxNzM3NjgsImV4cCI6MjA3Mjc0OTc2OH0.amMmJrd45QB1RwOteWTw2i_V2vq1lzAGHbifg7RB43o"
       );
 
       async function loadAnimation(animationId) {
-        const { data, error } = await supabase
+        const { data, error } = await supabaseClient
           .from("dog_animations")
           .select("animation_name, file_path, file_format, description")
           .eq("animation_id", animationId)
@@ -167,9 +167,9 @@
         }
       }
 
-      // Load animation ID 1 (change this ID as needed)
+      // Load the animation you want (change ID if needed)
       loadAnimation(1);
-    });
+    }
   </script>
 </body>
 </html>
