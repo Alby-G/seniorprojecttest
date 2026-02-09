@@ -37,7 +37,7 @@
       <div class="section-title">Mood Detected (Audio & Visual)</div>
       <div class="section-content">[Mood based on sounds and visuals]</div>
 
-      <div class="pet-status">Pet is: <span>[Animation]</span></div>
+      <div class="pet-status">Bob is: <span>[Animation]</span></div>
       <div class="detecting-status">Detecting: <span>[AI Mood]</span></div>
     </div>
 
@@ -75,7 +75,7 @@
         const petStatus = document.querySelector(".pet-status span");
 
         petStatus.textContent = data.animation_name || "[Animation]";
-        currentAnim.textContent = data.description || "[Animation description]";
+        currentAnim.textContent = data.animation_type || "[Animation description]";
 
         if (["mp4","webm"].includes(data.file_format.toLowerCase())) {
           dogPane.innerHTML = `<video src="${data.file_path}" controls width="320"></video>`;
