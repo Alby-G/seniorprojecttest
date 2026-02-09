@@ -10,13 +10,33 @@
     body { background: #fcfcfc; font-family: 'Fredoka One', cursive; padding: 2rem; color: #333; }
     h1 { font-size: 3rem; text-align: center; margin-bottom: 0.5rem; }
     .subtitle { font-size: 1.25rem; text-align: center; margin-bottom: 2rem; }
+
+    /* Dropdown container top right */
+    .animation-selector-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #fff;
+      border: 3px solid #ff7c1a;
+      border-radius: 16px;
+      padding: 0.5rem 1rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
     .main-pane { position: relative; width: 98vw; max-width: 1200px; min-height: 600px; margin: 2rem auto;
       background: #4fc3f7; border: 4px solid #ff7c1a; border-radius: 24px; box-shadow: 0 4px 24px rgba(0,0,0,0.08);
       padding: 2rem; display: flex; justify-content: center; gap: 2rem; }
+
     .side-pane, .dog-pane { background: #fff; border: 3px solid #ff7c1a; border-radius: 16px; box-shadow: 0 2px 12px rgba(0,0,0,0.07);
       padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; }
+
     .side-pane { width: 540px; min-height: 530px; }
     .dog-pane { width: 590px; min-height: 544px; height: 544px; align-items: center; justify-content: center; }
+
     .section-title { font-weight: bold; font-size: 1.1rem; color: #ff7c1a; margin-bottom: 0.5rem; }
     .section-content { font-size: 1rem; color: #333; margin-bottom: 0.4rem; display: flex; align-items: center; justify-content: center; }
     .pet-status, .detecting-status { font-weight: bold; font-size: 1.1rem; color: #4fc3f7; margin-top: 1.2rem; }
@@ -25,6 +45,13 @@
 <body>
   <h1>Pediatric Support Pet</h1>
   <div class="subtitle">By Evie Snyder, Rebecca Travlos, and Albert Giotti</div>
+
+  <!-- Dropdown to select animation -->
+  <div class="animation-selector-container">
+    <label for="animation-selector">Animation ID:</label>
+    <select id="animation-selector"></select>
+    <button id="load-animation-btn" class="btn btn-sm btn-primary">Load</button>
+  </div>
 
   <div class="main-pane">
     <div class="side-pane">
@@ -49,7 +76,7 @@
     </div>
   </div>
 
-  <!-- Supabase as ES module -->
+  <!-- Supabase ES module -->
   <script type="module">
     import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
@@ -57,6 +84,24 @@
       "https://xguhxlklweexjrnwlqup.supabase.co",
       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhndWh4bGtsd2VleGpybndscXVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcxNzM3NjgsImV4cCI6MjA3Mjc0OTc2OH0.amMmJrd45QB1RwOteWTw2i_V2vq1lzAGHbifg7RB43o"
     );
+
+    const selector = document.getElementById("animation-selector");
+    const loadBtn = document.getElementById("load-animation-btn");
+
+    async function populateDropdown() {
+      // Get all animation IDs from Supabase
+      const { data, error } = await supabase.from("dog_animations").select("animation_id");
+      if (error) {
+        console.error("Error fetching animation IDs:", error);
+        return;
+      }
+      data.forEach(row => {
+        const option = document.createElement("option");
+        option.value = row.animation_id;
+        option.textContent = `Animation ${row.animation_id}`;
+        selector.appendChild(option);
+      });
+    }
 
     async function loadAnimation(animationId) {
       try {
@@ -78,9 +123,9 @@
         currentAnim.textContent = data.description || "[Animation description]";
 
         if (["mp4","webm"].includes(data.file_format.toLowerCase())) {
-          dogPane.innerHTML = `<video src="${data.file_path}" autoplay loop muted width="580" style="border-radius:8px"></video>`;
+          dogPane.innerHTML = `<video src="${data.file_path}" autoplay loop muted width="320"></video>`;
         } else if (["gif","png","jpg","jpeg","webp"].includes(data.file_format.toLowerCase())) {
-          dogPane.innerHTML = `<img src="${data.file_path}" alt="${data.animation_type}" style="max-width:580px;border-radius:8px">`;
+          dogPane.innerHTML = `<img src="${data.file_path}" alt="${data.animation_type}" style="max-width:320px;border-radius:8px">`;
         } else {
           dogPane.textContent = "[Dog animation here]";
         }
@@ -89,8 +134,17 @@
       }
     }
 
-    // Load animation ID 1
-    loadAnimation(1);
+    // Populate dropdown on page load
+    populateDropdown();
+
+    // Load selected animation when button clicked
+    loadBtn.addEventListener("click", () => {
+      const id = selector.value;
+      if (id) loadAnimation(id);
+    });
+
+    // Optionally, load the first animation by default
+    selector.addEventListener("change", () => loadAnimation(selector.value));
   </script>
 </body>
 </html>
