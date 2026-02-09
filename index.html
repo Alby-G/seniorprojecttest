@@ -49,7 +49,7 @@
     </div>
   </div>
 
-  <!-- Supabase as ES module -->
+  <!-- Supabase ES Module -->
   <script type="module">
     import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
@@ -77,10 +77,11 @@
         petStatus.textContent = data.animation_type || "[Animation]";
         currentAnim.textContent = data.description || "[Animation description]";
 
-        if (["mp4","webm"].includes(data.file_format.toLowerCase())) {
-          dogPane.innerHTML = `<video src="${data.file_path}" controls width="320"></video>`;
-        } else if (["gif","png","jpg","jpeg","webp"].includes(data.file_format.toLowerCase())) {
-          dogPane.innerHTML = `<img src="${data.file_path}" alt="${data.animation_name}" style="max-width:320px;border-radius:8px">`;
+        const format = data.file_format.toLowerCase();
+        if (["mp4", "webm"].includes(format)) {
+          dogPane.innerHTML = `<video src="${data.file_path}" autoplay loop muted width="320" style="border-radius:8px"></video>`;
+        } else if (["gif","png","jpg","jpeg","webp"].includes(format)) {
+          dogPane.innerHTML = `<img src="${data.file_path}" alt="${data.animation_type}" style="max-width:320px;border-radius:8px">`;
         } else {
           dogPane.textContent = "[Dog animation here]";
         }
@@ -89,7 +90,7 @@
       }
     }
 
-    // Load animation ID 1
+    // Load example animation
     loadAnimation(1);
   </script>
 </body>
