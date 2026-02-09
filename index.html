@@ -62,7 +62,7 @@
       try {
         const { data, error } = await supabase
           .from("dog_animations")
-          .select("animation_name, file_path, file_format, description")
+          .select("animation_type, file_path, file_format, description")
           .eq("animation_id", animationId)
           .single();
 
