@@ -74,8 +74,8 @@
         const currentAnim = document.getElementById("current-animation");
         const petStatus = document.querySelector(".pet-status span");
 
-        petStatus.textContent = data.animation_name || "[Animation]";
-        currentAnim.textContent = data.animation_type || "[Animation description]";
+        petStatus.textContent = data.animation_type || "[Animation]";
+        currentAnim.textContent = data.description || "[Animation description]";
 
         if (["mp4","webm"].includes(data.file_format.toLowerCase())) {
           dogPane.innerHTML = `<video src="${data.file_path}" controls width="320"></video>`;
