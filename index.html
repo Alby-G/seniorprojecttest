@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pediatric Support Pet</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
+  <style>
+    .dog-pane {
+      width: 540px;
+      min-height: 544px;
+      height: 544px;
+      background: #fff;
+      border: 3px solid #ff7c1a;
+      border-radius: 16px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+      padding: 1.5rem 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 1.2rem;
+      position: absolute;
+      right: 2rem;
+      top: 2rem;
+    }
+    .main-pane {
+      position: relative;
+      width: 98vw;
+      max-width: 1200px;
+      min-height: 600px;
+      margin: 2rem auto;
+      background: #4fc3f7;
+      border: 4px solid #ff7c1a;
+      border-radius: 24px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+    }
+    .side-pane {
+      width: 540px;
+      min-height: 530px;
+      background: #fff;
+      border: 3px solid #ff7c1a;
+      border-radius: 16px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+      padding: 1.5rem 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.7rem;
+      position: absolute;
+      left: 2rem;
+      top: 2rem;
+    }
+    .section-title {
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: #ff7c1a;
+      margin-bottom: 0.5rem;
+    }
+    .section-content {
+      font-size: 1rem;
+      color: #333;
+      margin-bottom: 0.4rem;
+    }
+    .pet-status, .detecting-status {
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: #4fc3f7;
+      margin-top: 1.2rem;
+    }
+    body {
+      background-color: rgb(252, 252, 252);
+      color: #333;
+      font-family: 'Fredoka One', cursive;
+      padding: 2rem;
+    }
+    h1 {
+      font-size: 3rem;
+      text-align: center;
+      margin-bottom: 0.5rem;
+    }
+    .subtitle {
+      font-size: 1.25rem;
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>Pediatric Support Pet</h1>
+  <div class="subtitle">By Evie Snyder, Rebecca Travlos, and Albert Giotti</div>
+
+  <div class="main-pane">
+    <div class="side-pane">
+      <div>
+        <div class="section-title">Camera View</div>
+        <div class="section-content" style="height:180px; background:#eee; border-radius:8px; display:flex; align-items:center; justify-content:center; color:#aaa; margin-bottom:0.7rem;">
+          [Camera feed here]
+        </div>
+      </div>
+      <div>
+        <div class="section-title">What It Is Hearing</div>
+        <div class="section-content">[Speech or sound transcript]</div>
+      </div>
+      <div>
+        <div class="section-title">Mood Detected (Audio & Visual)</div>
+        <div class="section-content">[Mood based on sounds and visuals]</div>
+      </div>
+      <div class="pet-status">Pet is: <span>[Animation]</span></div>
+      <div class="detecting-status">Detecting: <span>[AI Mood]</span></div>
+    </div>
+
+    <div class="dog-pane">
+      <div class="section-title">Dog Animation</div>
+      <div class="section-content" style="height:320px; background:#eee; border-radius:8px; display:flex; align-items:center; justify-content:center; color:#aaa; font-size:2rem;">
+        [Dog animation here]
+      </div>
+      <div class="section-title">Current Animation</div>
+      <div class="section-content">[Animation description]</div>
+    </div>
+  </div>
+
+  <!-- Include Supabase client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.30.0/dist/supabase.min.js"></script>
+  <script>
+    // Initialize Supabase with your project info
+    const supabase = supabase.createClient(
+      "https://xguhxlklweexjrnwlqup.supabase.co",
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhndWh4bGtsd2VleGpybndscXVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcxNzM3NjgsImV4cCI6MjA3Mjc0OTc2OH0.amMmJrd45QB1RwOteWTw2i_V2vq1lzAGHbifg7RB43o"
+    );
+
+    async function loadAnimation(animationId) {
+      const { data, error } = await supabase
+        .from("dog_animations")
+        .select("animation_name, file_path, file_format, description")
+        .eq("animation_id", animationId)
+        .single();
+
+      if (error) {
+        console.error(error);
+        alert("Error loading animation");
+        return;
+      }
+
+      // Update the DOM
+      const dogPane = document.querySelector(".dog-pane .section-content");
+      const currentAnimation = document.querySelector(".dog-pane .section-content + .section-title + .section-content");
+      const petStatus = document.querySelector(".pet-status span");
+
+      petStatus.textContent = data.animation_name || "[Animation]";
+      currentAnimation.textContent = data.description || "[Animation description]";
+
+      if (["mp4","webm"].includes(data.file_format.toLowerCase())) {
+        dogPane.innerHTML = `<video src="${data.file_path}" controls width="320"></video>`;
+      } else if (["gif","png","jpg","jpeg","webp"].includes(data.file_format.toLowerCase())) {
+        dogPane.innerHTML = `<img src="${data.file_path}" alt="${data.animation_name}" style="max-width:320px;border-radius:8px">`;
+      } else {
+        dogPane.textContent = "[Dog animation here]";
+      }
+    }
+
+    // Example: load animation with ID 1
+    loadAnimation(1);
+  </script>
+</body>
+</html>
