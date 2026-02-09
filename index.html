@@ -16,7 +16,8 @@
     .side-pane, .dog-pane { background: #fff; border: 3px solid #ff7c1a; border-radius: 16px; box-shadow: 0 2px 12px rgba(0,0,0,0.07);
       padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; }
     .side-pane { width: 540px; min-height: 530px; }
-    .dog-pane { width: 540px; min-height: 544px; height: 544px; align-items: center; justify-content: center; }
+    /* Increased width of dog-pane */
+    .dog-pane { width: 640px; min-height: 544px; height: 544px; align-items: center; justify-content: center; }
     .section-title { font-weight: bold; font-size: 1.1rem; color: #ff7c1a; margin-bottom: 0.5rem; }
     .section-content { font-size: 1rem; color: #333; margin-bottom: 0.4rem; display: flex; align-items: center; justify-content: center; }
     .pet-status, .detecting-status { font-weight: bold; font-size: 1.1rem; color: #4fc3f7; margin-top: 1.2rem; }
@@ -79,9 +80,9 @@
 
         const format = data.file_format.toLowerCase();
         if (["mp4", "webm"].includes(format)) {
-          dogPane.innerHTML = `<video src="${data.file_path}" autoplay loop muted width="320" style="border-radius:8px"></video>`;
+          dogPane.innerHTML = `<video src="${data.file_path}" autoplay loop muted width="600" style="border-radius:8px"></video>`;
         } else if (["gif","png","jpg","jpeg","webp"].includes(format)) {
-          dogPane.innerHTML = `<img src="${data.file_path}" alt="${data.animation_type}" style="max-width:320px;border-radius:8px">`;
+          dogPane.innerHTML = `<img src="${data.file_path}" alt="${data.animation_type}" style="max-width:600px;border-radius:8px">`;
         } else {
           dogPane.textContent = "[Dog animation here]";
         }
